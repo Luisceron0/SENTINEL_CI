@@ -24,7 +24,7 @@ dependencies = [
 	"python-jose>=3.3,<4.0",
 	"argon2-cffi>=23.1,<26.0",
 	"httpx>=0.27,<0.29",
-	"weasyprint>=60,<61",
+	"weasyprint>=60,<69",
 ]
 
 [project.optional-dependencies]
