@@ -1,0 +1,56 @@
+<!--
+File Purpose:
+- Render repository details and scan history with trend visualization.
+
+Key Security Considerations:
+- Fetches scoped repository scan data from authenticated backend calls.
+
+OWASP 2025 Categories Addressed:
+- A01, A05, A09
+-->
+
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import TrendChart from "../../components/islands/TrendChart";
+import { listRepositoryScans } from "../../lib/api";
+
+const repositoryId = Astro.params.id ?? "";
+
+let scans = [];
+let loadError = "";
+
+try {
+  scans = await listRepositoryScans(repositoryId);
+} catch {
+  loadError = "Could not load scan history.";
+}
+
+const trend = scans.slice(0, 30).map((scan, index) => ({
+  label: `S${index + 1}`,
+  critical: scan.critical_count ?? 0,
+  high: Math.max((scan.findings_count ?? 0) - (scan.critical_count ?? 0), 0),
+}));
+---
+
+<BaseLayout title="Sentinel CI | Repository Detail">
+  <section class="panel">
+    <h1 class="heading">Repository {repositoryId}</h1>
+    <p class="subtle">Scan trend and history.</p>
+  </section>
+
+  {loadError ? <section class="panel" style="margin-top: 12px;">{loadError}</section> : null}
+
+  <section class="panel" style="margin-top: 12px;">
+    <h2 class="heading" style="font-size: 1rem;">Critical/High Trend</h2>
+    <TrendChart client:idle points={trend} />
+  </section>
+
+  <section class="panel" style="margin-top: 12px;">
+    <h2 class="heading" style="font-size: 1rem;">Recent Scans</h2>
+    <ul>
+      {scans.map((scan) => (
+        <li><a href={`/scans/${scan.id}`}>{scan.id}</a> - {scan.status}</li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>

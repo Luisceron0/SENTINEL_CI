@@ -1,0 +1,44 @@
+<!--
+File Purpose:
+- Render static repository summary card without client-side hydration.
+
+Key Security Considerations:
+- Static HTML output avoids runtime DOM injection risks.
+
+OWASP 2025 Categories Addressed:
+- A05, A06
+-->
+
+---
+interface Props {
+  id: string;
+  fullName: string;
+  defaultBranch: string;
+  lastScanStatus?: string;
+  riskScore?: number;
+}
+
+const { id, fullName, defaultBranch, lastScanStatus = "unknown", riskScore = 0 } = Astro.props;
+---
+
+<article class="panel repo-card">
+  <h3 class="repo-title">{fullName}</h3>
+  <p class="subtle">Default branch: {defaultBranch}</p>
+  <p class="subtle">Latest status: {lastScanStatus}</p>
+  <p class="risk">Risk score: {riskScore}</p>
+  <a class="open-link" href={`/repos/${id}`}>Open Repository</a>
+</article>
+
+<style>
+  .repo-card { display: grid; gap: 8px; }
+  .repo-title { margin: 0; font-size: 1.1rem; }
+  .risk { margin: 0; font-family: "JetBrains Mono", monospace; color: var(--accent); }
+  .open-link {
+    justify-self: start;
+    text-decoration: none;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px 10px;
+  }
+</style>

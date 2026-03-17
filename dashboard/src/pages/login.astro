@@ -1,0 +1,39 @@
+<!--
+File Purpose:
+- Render GitHub OAuth login entrypoint for Sentinel dashboard users.
+
+Key Security Considerations:
+- Uses explicit OAuth start URL and avoids token handling on login page.
+
+OWASP 2025 Categories Addressed:
+- A07, A08
+-->
+
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { buildGithubOAuthStartUrl } from "../lib/auth";
+
+const origin = Astro.url.origin;
+const oauthStartUrl = buildGithubOAuthStartUrl(origin);
+---
+
+<BaseLayout title="Sentinel CI | Login">
+  <section class="panel login-wrap">
+    <h1 class="heading">Sign in to Sentinel CI</h1>
+    <p class="subtle">Authenticate with GitHub OAuth to access repository security posture.</p>
+    <a class="login-btn" href={oauthStartUrl}>Continue with GitHub</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .login-wrap { max-width: 520px; margin: 12vh auto 0; display: grid; gap: 14px; }
+  .login-btn {
+    justify-self: start;
+    text-decoration: none;
+    background: linear-gradient(90deg, #58A6FF, #2F81F7);
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-weight: 600;
+  }
+</style>

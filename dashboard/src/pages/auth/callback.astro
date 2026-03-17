@@ -1,0 +1,32 @@
+<!--
+File Purpose:
+- Process OAuth callback response and establish secure session cookie.
+
+Key Security Considerations:
+- Sets HttpOnly/SameSite=Strict cookie and removes token from URL flow.
+
+OWASP 2025 Categories Addressed:
+- A02, A07, A08, A10
+-->
+
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { buildSessionSetCookie } from "../../lib/auth";
+
+const token = Astro.url.searchParams.get("token");
+const error = Astro.url.searchParams.get("error");
+const secure = Astro.url.protocol === "https:";
+
+if (token) {
+  Astro.response.headers.append("Set-Cookie", buildSessionSetCookie(token, { secure }));
+  return Astro.redirect("/", 302);
+}
+---
+
+<BaseLayout title="Sentinel CI | Auth Callback">
+  <section class="panel">
+    <h1 class="heading">Authentication failed</h1>
+    <p class="subtle">{error ? `OAuth error: ${error}` : "Missing token in callback response."}</p>
+    <a href="/login">Back to login</a>
+  </section>
+</BaseLayout>

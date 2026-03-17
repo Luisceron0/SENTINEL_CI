@@ -1,0 +1,131 @@
+<!--
+File Purpose:
+- Provide shared dark-theme shell for all dashboard pages with consistent security UX.
+
+Key Security Considerations:
+- Includes CSP-compatible structure with no inline script injection patterns.
+- Uses static-first markup to reduce attack surface and improve predictable rendering.
+
+OWASP 2025 Categories Addressed:
+- A02, A05, A08
+-->
+
+---
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/jetbrains-mono/500.css";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <title>{title}</title>
+    <style>
+      :root {
+        --bg: #0D1117;
+        --surface: #161B22;
+        --border: #30363D;
+        --text: #E6EDF3;
+        --muted: #8B949E;
+        --accent: #58A6FF;
+        --critical: #FF4444;
+        --high: #FF8800;
+        --medium: #FFCC00;
+        --low: #44BB44;
+        --info: #888888;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Inter", "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 85% 10%, rgba(88, 166, 255, 0.18), transparent 30%),
+          radial-gradient(circle at 10% 90%, rgba(68, 187, 68, 0.14), transparent 25%),
+          var(--bg);
+        min-height: 100vh;
+      }
+
+      main {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+
+      .panel {
+        background: color-mix(in srgb, var(--surface), transparent 2%);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px;
+        backdrop-filter: blur(3px);
+      }
+
+      .heading {
+        margin: 0 0 12px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+
+      .subtle { color: var(--muted); }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .brand {
+        font-family: "JetBrains Mono", "Consolas", monospace;
+        font-weight: 700;
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .nav {
+        display: flex;
+        gap: 12px;
+      }
+
+      .nav a {
+        color: var(--text);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 8px 12px;
+      }
+
+      .nav a:hover {
+        border-color: var(--accent);
+      }
+
+      @media (max-width: 768px) {
+        .topbar { flex-direction: column; align-items: flex-start; gap: 10px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header class="topbar">
+        <a class="brand" href="/">Sentinel CI</a>
+        <nav class="nav">
+          <a href="/">Repos</a>
+          <a href="/settings">Settings</a>
+        </nav>
+      </header>
+      <slot />
+    </main>
+  </body>
+</html>

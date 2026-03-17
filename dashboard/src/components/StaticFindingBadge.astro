@@ -1,0 +1,39 @@
+<!--
+File Purpose:
+- Render static severity badge for findings.
+
+Key Security Considerations:
+- Uses constrained enum-like mapping to avoid unsafe style interpolation.
+
+OWASP 2025 Categories Addressed:
+- A05
+-->
+
+---
+interface Props {
+  severity: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | "INFO";
+}
+
+const { severity } = Astro.props;
+const severityClass = severity.toLowerCase();
+---
+
+<span class={`badge ${severityClass}`}>{severity}</span>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    font-size: 0.8rem;
+    font-family: "JetBrains Mono", monospace;
+  }
+  .critical { color: var(--critical); border-color: color-mix(in srgb, var(--critical), black 25%); }
+  .high { color: var(--high); border-color: color-mix(in srgb, var(--high), black 25%); }
+  .medium { color: var(--medium); border-color: color-mix(in srgb, var(--medium), black 25%); }
+  .low { color: var(--low); border-color: color-mix(in srgb, var(--low), black 25%); }
+  .info { color: var(--info); border-color: color-mix(in srgb, var(--info), black 25%); }
+</style>

@@ -1,0 +1,58 @@
+<!--
+File Purpose:
+- Render repository overview dashboard page with server-side data fetch.
+
+Key Security Considerations:
+- SSR fetch avoids exposing privileged aggregation logic to client-side scripts.
+
+OWASP 2025 Categories Addressed:
+- A01, A05, A09
+-->
+
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import StaticRepoCard from "../components/StaticRepoCard.astro";
+import { listRepositories } from "../lib/api";
+
+let repositories = [];
+let loadError = "";
+
+try {
+  repositories = await listRepositories();
+} catch {
+  loadError = "Could not load repositories from API.";
+}
+---
+
+<BaseLayout title="Sentinel CI | Repositories">
+  <section class="panel">
+    <h1 class="heading">Repository Overview</h1>
+    <p class="subtle">Security posture snapshot across registered repositories.</p>
+  </section>
+
+  {loadError ? (
+    <section class="panel" style="margin-top: 12px;">
+      <p>{loadError}</p>
+    </section>
+  ) : null}
+
+  <section class="repo-grid">
+    {repositories.map((repo) => (
+      <StaticRepoCard
+        id={repo.id}
+        fullName={repo.full_name}
+        defaultBranch={repo.default_branch}
+        riskScore={0}
+      />
+    ))}
+  </section>
+</BaseLayout>
+
+<style>
+  .repo-grid {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+  }
+</style>

@@ -1,0 +1,52 @@
+<!--
+File Purpose:
+- Render scan detail view with severity chart and findings table.
+
+Key Security Considerations:
+- Displays only backend-validated finding records and escaped text content.
+
+OWASP 2025 Categories Addressed:
+- A01, A05, A09
+-->
+
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SeverityChart from "../../components/islands/SeverityChart";
+import FindingsTable from "../../components/islands/FindingsTable";
+import { getScan } from "../../lib/api";
+
+const scanId = Astro.params.id ?? "";
+let scan;
+let loadError = "";
+
+try {
+  scan = await getScan(scanId);
+} catch {
+  loadError = "Could not load scan details.";
+}
+
+const findings = scan?.findings ?? [];
+const severityData = ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"].map((level) => ({
+  name: level,
+  value: findings.filter((finding) => finding.severity === level).length,
+}));
+---
+
+<BaseLayout title="Sentinel CI | Scan Detail">
+  <section class="panel">
+    <h1 class="heading">Scan {scanId}</h1>
+    <p class="subtle">Detailed findings and severity distribution.</p>
+  </section>
+
+  {loadError ? <section class="panel" style="margin-top:12px;">{loadError}</section> : null}
+
+  <section class="panel" style="margin-top:12px;">
+    <h2 class="heading" style="font-size: 1rem;">Severity Distribution</h2>
+    <SeverityChart client:idle data={severityData} />
+  </section>
+
+  <section class="panel" style="margin-top:12px; overflow-x:auto;">
+    <h2 class="heading" style="font-size: 1rem;">Findings</h2>
+    <FindingsTable client:idle findings={findings} />
+  </section>
+</BaseLayout>

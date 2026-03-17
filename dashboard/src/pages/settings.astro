@@ -1,0 +1,91 @@
+<!--
+File Purpose:
+- Render user settings page for API key and webhook management.
+
+Key Security Considerations:
+- Handles webhook creation through server-side action path with validated payload shape.
+
+OWASP 2025 Categories Addressed:
+- A01, A04, A07
+-->
+
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ApiKeyManager from "../components/islands/ApiKeyManager";
+import { createWebhook } from "../lib/api";
+
+let webhookMessage = "";
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  const repositoryId = String(formData.get("repository_id") ?? "").trim();
+  const webhookUrl = String(formData.get("url") ?? "").trim();
+  const minimumSeverity = String(formData.get("minimum_severity") ?? "HIGH").trim();
+
+  if (repositoryId && webhookUrl) {
+    try {
+      await createWebhook(repositoryId, webhookUrl, minimumSeverity);
+      webhookMessage = "Webhook saved.";
+    } catch {
+      webhookMessage = "Unable to create webhook.";
+    }
+  } else {
+    webhookMessage = "Repository and URL are required.";
+  }
+}
+---
+
+<BaseLayout title="Sentinel CI | Settings">
+  <section class="panel">
+    <h1 class="heading">Settings</h1>
+    <p class="subtle">Manage API keys and repository webhooks.</p>
+  </section>
+
+  <section class="panel" style="margin-top: 12px;">
+    <h2 class="heading" style="font-size: 1rem;">API Keys</h2>
+    <ApiKeyManager client:idle />
+  </section>
+
+  <section class="panel" style="margin-top: 12px;">
+    <h2 class="heading" style="font-size: 1rem;">Webhooks</h2>
+    <form method="POST">
+      <label for="repository_id">Repository ID</label>
+      <input id="repository_id" name="repository_id" type="text" required />
+
+      <label for="url">Webhook URL</label>
+      <input id="url" name="url" type="url" required />
+
+      <label for="minimum_severity">Minimum severity</label>
+      <select id="minimum_severity" name="minimum_severity">
+        <option value="CRITICAL">CRITICAL</option>
+        <option value="HIGH" selected>HIGH</option>
+        <option value="MEDIUM">MEDIUM</option>
+        <option value="LOW">LOW</option>
+        <option value="INFO">INFO</option>
+      </select>
+
+      <button type="submit">Save webhook</button>
+    </form>
+    {webhookMessage ? <p>{webhookMessage}</p> : null}
+  </section>
+</BaseLayout>
+
+<style>
+  form { display: grid; gap: 8px; max-width: 560px; }
+  input, select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px;
+  }
+  button {
+    width: fit-content;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+</style>
