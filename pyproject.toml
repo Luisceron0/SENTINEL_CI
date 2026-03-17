@@ -18,7 +18,7 @@ description = "Security automation toolkit for GitHub workflows"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-	"fastapi>=0.110,<0.120",
+	"fastapi>=0.110,<0.136",
 	"pydantic>=2.6,<3.0",
 	"supabase>=2.4,<3.0",
 	"python-jose>=3.3,<4.0",
