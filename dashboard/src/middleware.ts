@@ -12,7 +12,7 @@ OWASP 2025 Categories Addressed:
 
 import { defineMiddleware } from "astro:middleware";
 
-import { SESSION_COOKIE, getSessionToken } from "./lib/auth";
+import { clearSessionCookie, getSessionToken } from "./lib/auth";
 
 const PUBLIC_PATH_PREFIXES = ["/login", "/auth/callback", "/favicon", "/_astro"];
 
@@ -29,6 +29,13 @@ function isPublicPath(pathname: string): boolean {
 }
 
 export const onRequest = defineMiddleware(async (context: MiddlewareContext, next: MiddlewareNext) => {
+  if (context.url.pathname === "/logout") {
+    const secure = context.url.protocol === "https:";
+    const response = context.redirect("/login", 302);
+    response.headers.append("Set-Cookie", clearSessionCookie({ secure }));
+    return response;
+  }
+
   const token = getSessionToken(context.request.headers.get("cookie"));
   const isAuthenticated = Boolean(token);
 
@@ -48,13 +55,6 @@ export const onRequest = defineMiddleware(async (context: MiddlewareContext, nex
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-
-  if (!isAuthenticated && context.url.pathname === "/logout") {
-    response.headers.append(
-      "Set-Cookie",
-      `${SESSION_COOKIE}=; Path=/; Max-Age=0; HttpOnly; SameSite=Strict`,
-    );
-  }
 
   return response;
 });

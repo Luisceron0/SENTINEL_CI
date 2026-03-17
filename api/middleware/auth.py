@@ -37,7 +37,12 @@ def get_settings() -> Settings:
 
 def _decode_jwt_token(token: str, settings: Settings) -> dict[str, Any]:
     try:
-        claims = jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
+        claims = jwt.decode(
+            token,
+            settings.jwt_secret,
+            algorithms=[settings.jwt_algorithm],
+            options={"verify_exp": True, "require_exp": True},
+        )
         return cast(dict[str, Any], claims)
     except JWTError as exc:
         raise HTTPException(status_code=401, detail="invalid_token") from exc

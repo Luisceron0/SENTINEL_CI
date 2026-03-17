@@ -10,12 +10,14 @@
 
 set -euo pipefail
 mkdir -p results
+mkdir -p "$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$PATH"
 
 policy_dir="${OPA_POLICY_DIR:-.sentinel/policies}"
 
 if ! command -v opa >/dev/null 2>&1; then
-  curl -fsSL -o /usr/local/bin/opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64_static
-  chmod +x /usr/local/bin/opa
+  curl -fsSL -o "$HOME/.local/bin/opa" https://openpolicyagent.org/downloads/latest/opa_linux_amd64_static
+  chmod +x "$HOME/.local/bin/opa"
 fi
 
 status="COMPLETED"

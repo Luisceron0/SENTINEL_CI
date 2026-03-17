@@ -22,6 +22,8 @@ from starlette.types import ASGIApp
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
+    _MAX_TRACKED_KEYS = 10_000
+
     def __init__(self, app: ASGIApp) -> None:
         super().__init__(app)
         self._events: dict[str, deque[float]] = defaultdict(deque)
@@ -37,6 +39,8 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         # SECURITY: auth failures are tracked with a tighter bucket.
         request.state.client_ip = ip
         request.state.auth_failed = False
+
+        _prune_store(self._events, now, window_seconds=300, max_keys=self._MAX_TRACKED_KEYS)
 
         if _is_general_limit_exceeded(self._events, f"general:{ip}", now, 60, 60):
             return Response(
@@ -81,3 +85,17 @@ def _extract_client_ip(request: Request) -> str:
     if request.client and request.client.host:
         return str(request.client.host)
     return "unknown"
+
+
+def _prune_store(
+    store: dict[str, deque[float]],
+    now: float,
+    window_seconds: int,
+    max_keys: int,
+) -> None:
+    if len(store) <= max_keys:
+        return
+
+    stale_keys = [k for k, bucket in store.items() if not bucket or (now - bucket[-1]) > window_seconds]
+    for key in stale_keys:
+        store.pop(key, None)

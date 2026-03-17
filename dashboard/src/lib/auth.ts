@@ -26,7 +26,11 @@ export function getSessionToken(cookieHeader: string | null): string | null {
   for (const part of parts) {
     if (part.startsWith(`${SESSION_COOKIE}=`)) {
       const value = part.slice(SESSION_COOKIE.length + 1);
-      return decodeURIComponent(value);
+      try {
+        return decodeURIComponent(value);
+      } catch {
+        return null;
+      }
     }
   }
   return null;

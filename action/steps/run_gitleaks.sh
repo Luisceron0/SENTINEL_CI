@@ -10,6 +10,8 @@
 
 set -euo pipefail
 mkdir -p results
+mkdir -p "$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$PATH"
 
 if ! command -v gitleaks >/dev/null 2>&1; then
   version="8.24.2"
@@ -18,7 +20,7 @@ if ! command -v gitleaks >/dev/null 2>&1; then
   url="https://github.com/gitleaks/gitleaks/releases/download/v${version#v}/${tarball}"
   curl -fsSL "$url" -o /tmp/gitleaks.tar.gz
   tar -xzf /tmp/gitleaks.tar.gz -C /tmp
-  install -m 0755 /tmp/gitleaks /usr/local/bin/gitleaks
+  install -m 0755 /tmp/gitleaks "$HOME/.local/bin/gitleaks"
 fi
 
 status="COMPLETED"

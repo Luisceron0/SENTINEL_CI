@@ -10,9 +10,10 @@
 
 set -euo pipefail
 mkdir -p results
+export PATH="$HOME/.local/bin:$PATH"
 
 if ! command -v checkov >/dev/null 2>&1; then
-  python -m pip install --quiet "checkov>=3,<4"
+  python -m pip install --quiet --user "checkov>=3,<4"
 fi
 
 status="COMPLETED"

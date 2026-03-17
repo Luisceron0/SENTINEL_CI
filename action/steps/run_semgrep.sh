@@ -11,9 +11,10 @@
 
 set -euo pipefail
 mkdir -p results
+export PATH="$HOME/.local/bin:$PATH"
 
 if ! command -v semgrep >/dev/null 2>&1; then
-  python -m pip install --quiet "semgrep>=1,<2"
+  python -m pip install --quiet --user "semgrep>=1,<2"
 fi
 
 status="COMPLETED"

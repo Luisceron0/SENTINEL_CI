@@ -11,9 +11,11 @@
 
 set -euo pipefail
 mkdir -p results
+mkdir -p "$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$PATH"
 
 if ! command -v trivy >/dev/null 2>&1; then
-  curl -fsSL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+  curl -fsSL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b "$HOME/.local/bin"
 fi
 
 status="COMPLETED"

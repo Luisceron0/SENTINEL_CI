@@ -12,6 +12,7 @@ OWASP 2025 Categories Addressed:
 
 from __future__ import annotations
 
+import logging
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -24,6 +25,7 @@ from api.services.defectdojo import DefectDojoService
 from api.services.scanner_normalizer import normalize_findings
 
 router = APIRouter(prefix="/api/scans", tags=["scans"])
+logger = logging.getLogger("sentinel.api")
 
 
 @router.post("", response_model=ScanOut, status_code=201)
@@ -47,7 +49,7 @@ async def ingest_scan(
         await service.import_scan(body.repository_name, payload)
     except RuntimeError:
         # SECURITY: ingest remains successful; external integration failures are isolated.
-        pass
+        logger.warning("defectdojo_import_failed", extra={"repository": body.repository_name})
 
     return ScanOut(
         scan_id=scan["id"],

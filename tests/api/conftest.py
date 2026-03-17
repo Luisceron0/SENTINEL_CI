@@ -12,6 +12,13 @@ OWASP 2025 Categories Addressed:
 from __future__ import annotations
 
 import os
+from collections.abc import Iterator
+from typing import Any
+
+import pytest
+
+from api.main import app
+from api.middleware.rate_limit import RateLimitMiddleware
 
 
 def pytest_sessionstart(session) -> None:
@@ -26,3 +33,22 @@ def pytest_sessionstart(session) -> None:
     os.environ.setdefault("NEXT_PUBLIC_DASHBOARD_URL", "https://dash.example.com")
     os.environ.setdefault("SENTINEL_JWT_SECRET", "jwt")
     os.environ.setdefault("SENTINEL_DB_BACKEND", "in-memory")
+
+
+def _reset_rate_limit_state() -> None:
+    if app.middleware_stack is None:
+        app.middleware_stack = app.build_middleware_stack()
+
+    current: Any = app.middleware_stack
+    while current is not None:
+        if isinstance(current, RateLimitMiddleware):
+            current._events.clear()
+            return
+        current = getattr(current, "app", None)
+
+
+@pytest.fixture(autouse=True)
+def clear_rate_limit_state() -> Iterator[None]:
+    _reset_rate_limit_state()
+    yield
+    _reset_rate_limit_state()

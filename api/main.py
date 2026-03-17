@@ -12,6 +12,8 @@ OWASP 2025 Categories Addressed:
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from uuid import uuid4
 
 from fastapi import FastAPI, Request
@@ -24,13 +26,15 @@ from api.middleware.security import SecurityHeadersMiddleware
 from api.routes import alerts, keys, reports, repositories, scans, webhooks
 
 
-def create_app() -> FastAPI:
-    app = FastAPI(title="Sentinel CI API", version="0.1.0")
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    # SECURITY: fail fast if runtime secrets/config are missing.
+    load_settings()
+    yield
 
-    @app.on_event("startup")
-    async def validate_startup_config() -> None:
-        # SECURITY: fail fast if runtime secrets/config are missing.
-        load_settings()
+
+def create_app() -> FastAPI:
+    app = FastAPI(title="Sentinel CI API", version="0.1.0", lifespan=lifespan)
 
     app.add_middleware(RateLimitMiddleware)
     app.add_middleware(SecurityHeadersMiddleware)
