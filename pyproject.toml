@@ -22,11 +22,7 @@ dependencies = [
 	"pydantic>=2.6,<3.0",
 	"supabase>=2.4,<3.0",
 	"python-jose>=3.3,<4.0",
-<<<<<<< HEAD
-	"argon2-cffi>=23.1,<24.0",
-=======
 	"argon2-cffi>=23.1,<26.0",
->>>>>>> 9272ac3 (feat: enhance security and error handling in API and dashboard authentication, improve rate limiting, and update dependencies)
 	"httpx>=0.27,<0.29",
 	"weasyprint>=60,<61",
 ]
