@@ -1,0 +1,112 @@
+# File Purpose:
+# - Define Sentinel CI reusable composite GitHub Action orchestrating security scanners.
+#
+# Key Security Considerations:
+# - Enforces sequential scanner execution with fail-secure aggregation behavior.
+# - Sends normalized scan payloads to backend API and emits deterministic outputs.
+#
+# OWASP 2025 Categories Addressed:
+# - A03, A06, A08, A10
+
+name: Sentinel CI
+description: Security automation for developers who ship.
+
+inputs:
+  api-endpoint:
+    description: Sentinel CI backend endpoint URL.
+    required: true
+  api-key:
+    description: Sentinel CI API key.
+    required: true
+  scanners:
+    description: Comma-separated scanners list or all.
+    required: false
+    default: all
+  dast-target:
+    description: Optional DAST target URL.
+    required: false
+    default: ""
+  fail-on-severity:
+    description: Minimum severity threshold to fail pipeline.
+    required: false
+    default: HIGH
+  opa-policy-dir:
+    description: Policy directory for OPA evaluation.
+    required: false
+    default: .sentinel/policies
+
+outputs:
+  scan-id:
+    description: UUID of the created scan in Sentinel CI.
+    value: ${{ steps.aggregate.outputs.scan-id }}
+  findings-count:
+    description: Total findings count.
+    value: ${{ steps.aggregate.outputs.findings-count }}
+  critical-count:
+    description: Total critical findings count.
+    value: ${{ steps.aggregate.outputs.critical-count }}
+  dashboard-url:
+    description: Direct dashboard link to the scan.
+    value: ${{ steps.aggregate.outputs.dashboard-url }}
+
+runs:
+  using: composite
+  steps:
+    - name: Prepare workspace
+      shell: bash
+      run: |
+        set -euo pipefail
+        mkdir -p results
+
+    - name: Run Semgrep
+      if: ${{ inputs.scanners == 'all' || contains(inputs.scanners, 'semgrep') }}
+      shell: bash
+      run: ${{ github.action_path }}/action/steps/run_semgrep.sh
+
+    - name: Run Trivy
+      if: ${{ inputs.scanners == 'all' || contains(inputs.scanners, 'trivy') }}
+      shell: bash
+      run: ${{ github.action_path }}/action/steps/run_trivy.sh
+
+    - name: Run Gitleaks
+      if: ${{ inputs.scanners == 'all' || contains(inputs.scanners, 'gitleaks') }}
+      shell: bash
+      run: ${{ github.action_path }}/action/steps/run_gitleaks.sh
+
+    - name: Run Checkov
+      if: ${{ inputs.scanners == 'all' || contains(inputs.scanners, 'checkov') }}
+      shell: bash
+      run: ${{ github.action_path }}/action/steps/run_checkov.sh
+
+    - name: Run ZAP
+      if: ${{ inputs.scanners == 'all' || contains(inputs.scanners, 'zap') }}
+      shell: bash
+      env:
+        DAST_TARGET: ${{ inputs.dast-target }}
+      run: ${{ github.action_path }}/action/steps/run_zap.sh
+
+    - name: Run OPA
+      if: ${{ inputs.scanners == 'all' || contains(inputs.scanners, 'opa') }}
+      shell: bash
+      env:
+        OPA_POLICY_DIR: ${{ inputs.opa-policy-dir }}
+      run: ${{ github.action_path }}/action/steps/run_opa.sh
+
+    - name: Aggregate and upload scan
+      id: aggregate
+      shell: bash
+      env:
+        SENTINEL_API_ENDPOINT: ${{ inputs.api-endpoint }}
+        SENTINEL_API_KEY: ${{ inputs.api-key }}
+        FAIL_ON_SEVERITY: ${{ inputs.fail-on-severity }}
+      run: python ${{ github.action_path }}/action/aggregate.py
+
+    - name: Publish PR annotations
+      if: ${{ github.event_name == 'pull_request' }}
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_SHA: ${{ github.sha }}
+        GITHUB_EVENT_PATH: ${{ github.event_path }}
+      run: python ${{ github.action_path }}/action/post_annotations.py
