@@ -1,0 +1,25 @@
+# File Purpose:
+# - Enforce a custom Semgrep policy that blocks weak cryptographic primitives.
+#
+# Key Security Considerations:
+# - Prevents accidental use of MD5/SHA1 in Python and TypeScript code paths.
+#
+# OWASP 2025 Categories Addressed:
+# - A04, A03
+
+rules:
+  - id: sentinel-no-weak-crypto-python
+    languages: [python]
+    severity: ERROR
+    message: "# SECURITY: Weak cryptography is forbidden. Use approved primitives only (Argon2id, HMAC-SHA256)."
+    patterns:
+      - pattern-either:
+          - pattern: hashlib.md5(...)
+          - pattern: hashlib.sha1(...)
+
+  - id: sentinel-no-weak-crypto-typescript
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: "# SECURITY: Weak cryptography is forbidden. MD5/SHA1 are not allowed."
+    patterns:
+      - pattern-regex: "createHash\\(\\s*['\"](md5|sha1)['\"]\\s*\\)"

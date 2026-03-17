@@ -1,0 +1,44 @@
+{
+  "_comment_block": {
+    "file_purpose": "Configure linting rules for TypeScript and Astro files.",
+    "key_security_considerations": [
+      "Reject risky coding patterns in frontend code and scripts.",
+      "Maintain consistent static analysis in CI and pre-commit."
+    ],
+    "owasp_2025_categories_addressed": ["A03", "A05", "A10"]
+  },
+  "root": true,
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:astro/recommended",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint", "astro"],
+  "overrides": [
+    {
+      "files": ["*.astro"],
+      "parser": "astro-eslint-parser",
+      "parserOptions": {
+        "parser": "@typescript-eslint/parser",
+        "extraFileExtensions": [".astro"]
+      }
+    }
+  ],
+  "rules": {
+    "no-console": ["error", { "allow": ["warn", "error"] }],
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "@typescript-eslint/no-explicit-any": "error"
+  }
+}

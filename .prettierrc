@@ -1,0 +1,14 @@
+# File Purpose:
+# - Define formatting standards for TypeScript/Astro and documentation consistency.
+#
+# Key Security Considerations:
+# - Consistent formatting reduces review noise and helps spot risky code changes.
+#
+# OWASP 2025 Categories Addressed:
+# - A03
+
+semi: true
+singleQuote: true
+trailingComma: all
+printWidth: 100
+tabWidth: 2

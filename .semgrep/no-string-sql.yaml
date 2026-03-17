@@ -1,0 +1,32 @@
+# File Purpose:
+# - Enforce a custom Semgrep policy that blocks string interpolation in SQL-like execution contexts.
+#
+# Key Security Considerations:
+# - Reduces injection risk by forbidding dynamic SQL composition patterns.
+#
+# OWASP 2025 Categories Addressed:
+# - A05, A03
+
+rules:
+  - id: sentinel-no-string-sql-format
+    languages: [python]
+    severity: ERROR
+    message: "# SECURITY: Do not use string formatting in query/execute/sql calls. Use parameterized interfaces only."
+    patterns:
+      - pattern-either:
+          - pattern: $F(..., $Q % ... , ...)
+          - pattern: $F(..., $Q.format(...), ...)
+          - pattern: $F(..., f"...{$X}...", ...)
+      - metavariable-regex:
+          metavariable: $F
+          regex: (?i).*(query|execute|sql).*
+
+  - id: sentinel-no-string-sql-concat
+    languages: [python]
+    severity: ERROR
+    message: "# SECURITY: Do not concatenate strings in query/execute/sql calls. Use parameterized interfaces only."
+    patterns:
+      - pattern: $F(..., $A + $B, ...)
+      - metavariable-regex:
+          metavariable: $F
+          regex: (?i).*(query|execute|sql).*

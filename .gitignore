@@ -1,0 +1,56 @@
+# File Purpose:
+# - Exclude generated, local, and secret-bearing files from version control.
+#
+# Key Security Considerations:
+# - Prevent accidental commit of credentials, local databases, cache artifacts, and build outputs.
+#
+# OWASP 2025 Categories Addressed:
+# - A02, A03, A08
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Node / Astro
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/
+dashboard/.astro/
+dashboard/dist/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+*.tfvars.json
+
+# Vercel
+.vercel/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and reports
+*.log
+results/
+coverage/
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json

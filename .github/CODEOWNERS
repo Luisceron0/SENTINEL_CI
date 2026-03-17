@@ -1,0 +1,10 @@
+# File Purpose:
+# - Define default code ownership and review responsibility for repository changes.
+#
+# Key Security Considerations:
+# - Ensures accountable review for security-sensitive changes.
+#
+# OWASP 2025 Categories Addressed:
+# - A03, A06
+
+* @Luisceron0

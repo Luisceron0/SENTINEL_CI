@@ -1,0 +1,39 @@
+# File Purpose:
+# - Define Python project metadata and enforce static quality/security tooling baselines.
+#
+# Key Security Considerations:
+# - Strict linting and typing reduce unsafe patterns and runtime ambiguity.
+#
+# OWASP 2025 Categories Addressed:
+# - A03, A05, A10
+
+[project]
+name = "sentinel-ci"
+version = "0.1.0"
+description = "Security automation toolkit for GitHub workflows"
+readme = "README.md"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S", "N", "RUF"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+no_implicit_optional = true
+check_untyped_defs = true
+strict_equality = true
+pretty = true

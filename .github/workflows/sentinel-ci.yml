@@ -1,0 +1,29 @@
+# File Purpose:
+# - Provide Phase 0 placeholder workflow for Sentinel CI dogfooding pipeline.
+#
+# Key Security Considerations:
+# - Uses least-privilege permissions from day one.
+# - Full scanner orchestration is added in Phase 5 per implementation plan.
+#
+# OWASP 2025 Categories Addressed:
+# - A03, A06, A08
+
+name: sentinel-ci
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  phase0-placeholder:
+    name: Phase 0 placeholder
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder notice
+        run: |
+          echo "Sentinel CI dogfooding workflow scaffolded in Phase 0."
+          echo "Full scanner pipeline will be implemented in Phase 5."

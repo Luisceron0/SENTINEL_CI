@@ -1,0 +1,39 @@
+{
+  "$comment_block": {
+    "file_purpose": "Define Vercel routing and mandatory security headers for all responses.",
+    "key_security_considerations": [
+      "Applies baseline browser hardening headers at the platform edge.",
+      "Complements framework-level middleware for defense in depth."
+    ],
+    "owasp_2025_categories_addressed": ["A02", "A08"]
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://avatars.githubusercontent.com"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    }
+  ]
+}
