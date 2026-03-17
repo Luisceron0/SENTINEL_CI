@@ -34,7 +34,11 @@ export default function FindingsTable({ findings }: { findings: Finding[] }) {
     <div>
       <div style={{ marginBottom: 10 }}>
         <label htmlFor="severityFilter">Severity:</label>
-        <select id="severityFilter" value={filter} onChange={(e: any) => setFilter(e.target.value)}>
+        <select
+          id="severityFilter"
+          value={filter}
+          onChange={(e: { target: { value: string } }) => setFilter(e.target.value)}
+        >
           <option value="ALL">All</option>
           {ORDER.map((sev) => (
             <option key={sev} value={sev}>{sev}</option>

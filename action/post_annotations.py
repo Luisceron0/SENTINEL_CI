@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import os
+import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
@@ -62,7 +63,7 @@ def main() -> int:
     try:
         with urllib.request.urlopen(req, timeout=20):
             return 0
-    except Exception:
+    except urllib.error.URLError:
         return 0
 
 
@@ -80,7 +81,7 @@ def _load_findings() -> list[dict[str, Any]]:
             continue
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
-        except Exception:
+        except (json.JSONDecodeError, OSError):
             continue
         if path.name == "semgrep.json":
             for item in data.get("results", []):

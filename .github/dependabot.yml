@@ -1,0 +1,28 @@
+# File Purpose:
+# - Configure automated dependency update scanning for Python and Node ecosystems.
+#
+# Key Security Considerations:
+# - Reduces known-vulnerability exposure window in supply-chain dependencies.
+#
+# OWASP 2025 Categories Addressed:
+# - A03
+
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "npm"
+    directory: "/dashboard"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10

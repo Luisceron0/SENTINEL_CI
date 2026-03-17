@@ -56,3 +56,24 @@ Please do not create public issues for suspected vulnerabilities.
 - Static analysis and secret scanning run in CI.
 - Security-focused API tests required for authentication, authorization, and webhook integrity.
 - Merge gates block HIGH/CRITICAL findings per policy.
+
+## OWASP 2025 Compliance Evidence
+| Category | Implementation Evidence | Verification Evidence |
+|---|---|---|
+| A01 | Ownership checks in API routes + Supabase RLS policies on all tables | `tests/api/test_cross_user_access.py` returns 403 for cross-tenant access |
+| A02 | CSP + frame/content/referrer headers in `vercel.json`, Astro middleware, and API middleware | Header configuration inspected in code and middleware execution paths |
+| A03 | Dogfooding workflow runs Semgrep/Trivy/Gitleaks/Checkov/ZAP/OPA and Dependabot enabled | `.github/workflows/sentinel-ci.yml` and `.github/dependabot.yml` |
+| A04 | Argon2id API key hashing + HMAC-SHA256 webhook signing/verification | `tests/api/test_api_key_hashing.py`, `tests/api/test_webhook_hmac.py` |
+| A05 | Strict Pydantic models + SSRF validation + Semgrep custom rules | `api/models/schemas.py`, `api/utils/validators.py`, `.semgrep/` rules |
+| A06 | Threat model created before app code and fail-secure scanner handling | `THREAT_MODEL.md`, action scanner scripts with timeout/failed status |
+| A07 | JWT/API key auth controls, strict cookie policy, auth rate limit middleware | `api/middleware/auth.py`, `api/middleware/rate_limit.py` |
+| A08 | Signed webhook payloads, pinned workflow SHAs, SBOM generation and release attachment flow | `api/services/webhook_delivery.py`, workflow pinning, `release-sbom` job |
+| A09 | Structured JSON request logs with user hash and credential-stuffing warning event | `api/middleware/logging.py` |
+| A10 | Global exception sanitizer + explicit typed try/except at trust boundaries | `api/main.py`, service-level exception handling |
+
+## Current Validation Snapshot
+1. `ruff check api/` passed.
+2. `mypy api/` passed.
+3. `pytest tests/api/` passed.
+4. `bash tests/action/test_scripts_exist.sh` passed.
+5. `bash tests/action/test_aggregate_contract.sh` passed.

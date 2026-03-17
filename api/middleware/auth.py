@@ -47,7 +47,6 @@ def require_auth(
     request: Request,
     authorization: str | None = Header(default=None),
     x_sentinel_key: str | None = Header(default=None),
-    db: DatabasePort = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> RequestIdentity:
     if authorization and authorization.startswith("Bearer "):
@@ -61,6 +60,7 @@ def require_auth(
         return identity
 
     if x_sentinel_key:
+        db: DatabasePort = get_db()
         key_id = verify_api_key(x_sentinel_key, db.get_active_api_key_hashes())
         if not key_id:
             raise HTTPException(status_code=401, detail="invalid_api_key")

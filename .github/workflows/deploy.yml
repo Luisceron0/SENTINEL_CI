@@ -1,0 +1,49 @@
+# File Purpose:
+# - Deploy Sentinel CI dashboard and API to Vercel on main branch merges.
+#
+# Key Security Considerations:
+# - Uses environment-injected Vercel token and avoids hardcoded credentials.
+# - Restricts deployment trigger to trusted branch updates.
+#
+# OWASP 2025 Categories Addressed:
+# - A02, A03, A08
+
+name: deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  vercel-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608
+
+      - name: Install Vercel CLI
+        shell: bash
+        run: npm install --global vercel@34.3.7
+
+      - name: Pull Vercel environment
+        shell: bash
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: vercel pull --yes --environment=production --token "$VERCEL_TOKEN"
+
+      - name: Build
+        shell: bash
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --prod --token "$VERCEL_TOKEN"
+
+      - name: Deploy
+        shell: bash
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN"

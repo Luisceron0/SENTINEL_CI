@@ -17,6 +17,7 @@ import json
 import os
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 import uuid
 from pathlib import Path
@@ -237,6 +238,10 @@ def _load_json(path: Path, default: Any) -> Any:
 
 
 def _post_scan(endpoint: str, api_key: str, payload: dict[str, Any]) -> dict[str, Any]:
+    parsed = urllib.parse.urlparse(endpoint)
+    if parsed.scheme != "https" or not parsed.netloc:
+        raise RuntimeError("invalid_api_endpoint")
+
     req = urllib.request.Request(
         url=f"{endpoint}/scans",
         data=json.dumps(payload).encode("utf-8"),

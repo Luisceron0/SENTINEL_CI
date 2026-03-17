@@ -21,7 +21,7 @@ interface ImportMeta {
 }
 
 declare module "astro:middleware" {
-  export function defineMiddleware(handler: any): any;
+  export function defineMiddleware<T>(handler: T): T;
 }
 
 declare module "react";
@@ -30,6 +30,6 @@ declare module "recharts";
 
 declare namespace JSX {
   interface IntrinsicElements {
-    [elemName: string]: any;
+    [elemName: string]: unknown;
   }
 }

@@ -16,11 +16,19 @@ import { SESSION_COOKIE, getSessionToken } from "./lib/auth";
 
 const PUBLIC_PATH_PREFIXES = ["/login", "/auth/callback", "/favicon", "/_astro"];
 
+type MiddlewareContext = {
+  request: Request;
+  url: URL;
+  redirect: (path: string, status?: number) => Response;
+};
+
+type MiddlewareNext = () => Promise<Response>;
+
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 }
 
-export const onRequest = defineMiddleware(async (context: any, next: any) => {
+export const onRequest = defineMiddleware(async (context: MiddlewareContext, next: MiddlewareNext) => {
   const token = getSessionToken(context.request.headers.get("cookie"));
   const isAuthenticated = Boolean(token);
 

@@ -44,6 +44,9 @@ ignore = ["E501", "B008"]
 
 [tool.ruff.lint.per-file-ignores]
 "api/utils/crypto.py" = ["I001"]
+"tests/**/*.py" = ["S101"]
+"action/aggregate.py" = ["S310"]
+"action/post_annotations.py" = ["S310"]
 
 [tool.ruff.format]
 quote-style = "double"

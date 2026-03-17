@@ -53,7 +53,7 @@ export default function ApiKeyManager() {
         <input
           type="text"
           value={revokeId}
-          onChange={(e: any) => setRevokeId(e.target.value)}
+          onChange={(e: { target: { value: string } }) => setRevokeId(e.target.value)}
           placeholder="key id"
         />
         <button type="button" onClick={handleRevoke}>Revoke</button>
