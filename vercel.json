@@ -3,17 +3,20 @@
     "file_purpose": "Define Vercel routing and mandatory security headers for all responses.",
     "key_security_considerations": [
       "Applies baseline browser hardening headers at the platform edge.",
-      "Complements framework-level middleware for defense in depth."
+      "Complements framework-level middleware for defense in depth.",
+      "Astro dashboard deployed as root; API backend separate."
     ],
     "owasp_2025_categories_addressed": ["A02", "A08"]
   },
+  "buildCommand": "cd dashboard && npm run build",
+  "outputDirectory": "dashboard/.vercel/output/static",
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://avatars.githubusercontent.com"
+          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://avatars.githubusercontent.com; connect-src 'self' https://supabase.co"
         },
         {
           "key": "X-Frame-Options",
@@ -26,6 +29,10 @@
         {
           "key": "Referrer-Policy",
           "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "geolocation=(), microphone=(), camera=()"
         }
       ]
     }
@@ -33,7 +40,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "dest": "http://localhost:8000/api/$1"
     }
   ]
 }

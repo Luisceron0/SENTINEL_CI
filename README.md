@@ -59,7 +59,50 @@ Sentinel CI is an open-source DevSecOps toolkit for GitHub workflows. It orchest
 1. Read THREAT_MODEL.md and SECURITY.md.
 2. Configure required environment variables in local shell and deployment platform.
 3. Add Sentinel CI action to your repository workflow.
-4. Connect Supabase, Vercel, and DefectDojo according to setup docs (added in later phases).
+4. Connect Supabase, Vercel, and DefectDojo according to setup docs.
+
+## Deployment
+
+### Dashboard (Vercel)
+The Astro dashboard is configured for serverless deployment on Vercel with security headers and middleware.
+
+**Prerequisites:**
+- Supabase project with authentication configured
+- Environment variables set in Vercel project settings
+
+**Environment Variables (Dashboard):**
+```
+PUBLIC_SENTINEL_API_ENDPOINT=https://api.yourdomain.com
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your_anon_key
+```
+
+**Deploy Steps:**
+```bash
+# Local build preview
+cd dashboard && npm install && npm run build
+
+# Push to GitHub, connect to Vercel
+# Vercel will auto-detect astro.config.mjs and build dashboard/
+# Set environment variables in Vercel dashboard settings
+```
+
+**Build Output:** `dashboard/.vercel/output/static`
+
+### API (FastAPI)
+Deployed separately as backend service (to cloud platform of choice: Render, Railway, AWS, etc.)
+
+**Environment Variables (API):**
+```
+SUPABASE_URL=...
+SUPABASE_SERVICE_KEY=...
+JWT_SECRET=...
+VERCEL_URL=https://dashboard.vercel.app  # CORS origin
+```
+
+See [SETUP.md](docs/SETUP.md) for complete backend deployment guide.
 
 ## Project Status
-This repository currently contains Phase 0 foundation artifacts. Implementation of API, action internals, database migrations, and dashboard follows phased delivery.
+**Phase 0 - Foundation:** Core dependencies updated via Dependabot integration.
+**Phase 1 - Ready:** Dashboard frontend, API backend, Supabase migrations, GitHub Action.
+Deployment to production pending environment provisioning.
