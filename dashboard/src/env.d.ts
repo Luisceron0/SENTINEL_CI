@@ -1,3 +1,4 @@
+/// <reference path="../.astro/types.d.ts" />
 /*
 File Purpose:
 - Provide ambient type declarations for Astro dashboard modules and environment variables.
