@@ -1,13 +1,4 @@
 {
-  "$comment_block": {
-    "file_purpose": "Define Vercel routing and mandatory security headers for all responses.",
-    "key_security_considerations": [
-      "Applies baseline browser hardening headers at the platform edge.",
-      "Complements framework-level middleware for defense in depth.",
-      "Astro dashboard deployed as root; API backend separate."
-    ],
-    "owasp_2025_categories_addressed": ["A02", "A08"]
-  },
   "buildCommand": "cd dashboard && npm run build",
   "outputDirectory": "dashboard/.vercel/output/static",
   "headers": [
