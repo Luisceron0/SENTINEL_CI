@@ -57,7 +57,16 @@ export function clearSessionCookie(options: SessionCookieOptions): string {
 }
 
 export function buildGithubOAuthStartUrl(origin: string): string {
-  const apiBase = (import.meta as any).env?.PUBLIC_SENTINEL_API_ENDPOINT || origin;
+  const env: any = (import.meta as any).env || {};
   const redirectTo = encodeURIComponent(`${origin}/auth/callback`);
-  return `${apiBase}/api/auth/github/start?redirect_to=${redirectTo}`;
+
+  // Prefer Supabase Auth direct authorize endpoint when SUPABASE URL is available.
+  if (env.PUBLIC_SUPABASE_URL) {
+    const supabase = env.PUBLIC_SUPABASE_URL.replace(/\/$/, "");
+    return `${supabase}/auth/v1/authorize?provider=github&redirect_to=${redirectTo}`;
+  }
+
+  // Fallback to API endpoint if provided, otherwise use origin (local dev).
+  const apiBase = env.PUBLIC_SENTINEL_API_ENDPOINT || origin;
+  return `${apiBase.replace(/\/$/, "")}/api/auth/github/start?redirect_to=${redirectTo}`;
 }
