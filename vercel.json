@@ -1,6 +1,8 @@
 {
-  "buildCommand": "cd dashboard && npm run build",
-  "outputDirectory": "dashboard/.vercel/output/static",
+  "root": "dashboard",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": ".vercel/output/static",
   "headers": [
     {
       "source": "/(.*)",
