@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "description": "Frontend lint tooling for Sentinel CI dashboard",
   "scripts": {
-    "lint:dashboard": "eslint dashboard/src/"
+    "lint:dashboard": "eslint dashboard/src/",
+    "postinstall": "npm install --prefix dashboard"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.30.1",
