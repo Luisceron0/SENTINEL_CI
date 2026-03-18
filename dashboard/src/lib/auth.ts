@@ -57,6 +57,7 @@ export function clearSessionCookie(options: SessionCookieOptions): string {
 }
 
 export function buildGithubOAuthStartUrl(origin: string): string {
+  const apiBase = (import.meta as any).env?.PUBLIC_SENTINEL_API_ENDPOINT || origin;
   const redirectTo = encodeURIComponent(`${origin}/auth/callback`);
-  return `${origin}/api/auth/github/start?redirect_to=${redirectTo}`;
+  return `${apiBase}/api/auth/github/start?redirect_to=${redirectTo}`;
 }
