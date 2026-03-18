@@ -1,1 +1,6 @@
-{}
+{
+	"functions": {
+		"_render": { "runtime": "nodejs18" },
+		"api/*": { "runtime": "nodejs18" }
+	}
+}
